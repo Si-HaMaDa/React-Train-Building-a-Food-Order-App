@@ -1,11 +1,11 @@
 import MyHeader from "./components/Layout/MyHeader";
 import Meals from "./components/Meals/Meals";
-import Modal from "./components/UI/Modal";
+import Cart from "./components/Cart/Cart";
 
 function App() {
     return (
         <>
-            <Modal />
+            <Cart />
             <MyHeader />
             <main>
                 <Meals />
