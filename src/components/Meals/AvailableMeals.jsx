@@ -1,3 +1,4 @@
+import Card from "./../UI/Card";
 import MealItem from "./MealItem/MealItem";
 import classes from "./AvailableMeals.module.css";
 
@@ -40,7 +41,9 @@ function AvailableMeals() {
 
     return (
         <section className={classes.meals}>
-            <ul>{mealsList}</ul>
+            <Card>
+                <ul>{mealsList}</ul>
+            </Card>
         </section>
     );
 }
