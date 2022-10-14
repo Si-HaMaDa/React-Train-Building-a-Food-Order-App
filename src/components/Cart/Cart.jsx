@@ -10,9 +10,15 @@ import CartContext from "../../store/cart-context";
 function Cart(props) {
     const cartCtx = useContext(CartContext);
 
-    const cartTotals = cartCtx.items.reduce((num, item) => {
-        return num + item.amount * item.price;
-    }, 0);
+    const cartTotals = cartCtx.totalAmount;
+
+    const cartAddHandler = (item) => {
+        cartCtx.addItem({ ...item, amount: 1 });
+    };
+
+    const cartRemoveHandler = (id) => {
+        cartCtx.removeItem(id);
+    };
 
     const cartItems = (
         <ul className={classes["cart-items"]}>
@@ -23,8 +29,8 @@ function Cart(props) {
                     name={item.name}
                     price={item.price}
                     amount={item.amount}
-                    onAdd={() => {}}
-                    onRemove={() => {}}
+                    onAdd={cartAddHandler.bind(null, item)}
+                    onRemove={cartRemoveHandler.bind(null, item.id)}
                 />
             ))}
         </ul>
