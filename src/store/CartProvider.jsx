@@ -8,89 +8,81 @@ const defaultCartState = {
 };
 
 const cartReducer = (state, action = { type: null }) => {
+    let updateTotalAmount,
+        updateTotalItems,
+        existItemIndex,
+        existItem,
+        updateItems;
+
     switch (action.type) {
         case "ADD":
-            const updatedTotalAmount = +(
+            updateTotalAmount = +(
                 state.totalAmount +
                 action.item.price * action.item.amount
             ).toFixed(2);
-            const updatedTotalItems = state.totalItems + action.item.amount;
+            updateTotalItems = state.totalItems + action.item.amount;
 
-            const existItemIndex = state.items.findIndex(
+            existItemIndex = state.items.findIndex(
                 (item) => item.id === action.item.id
             );
-            const existItem = state.items[existItemIndex];
-
-            let updatedItems;
+            existItem = state.items[existItemIndex];
 
             if (existItem) {
-                const updateItem = {
+                let updateItem = {
                     ...existItem,
                     amount: existItem.amount + action.item.amount,
                 };
-                updatedItems = [...state.items];
-                updatedItems[existItemIndex] = updateItem;
+                updateItems = [...state.items];
+                updateItems[existItemIndex] = updateItem;
             } else {
-                updatedItems = state.items.concat(action.item);
+                updateItems = state.items.concat(action.item);
             }
-
-            localStorage.setItem(
-                "cart",
-                JSON.stringify({
-                    items: updatedItems,
-                    totalAmount: updatedTotalAmount,
-                    totalItems: updatedTotalItems,
-                })
-            );
-            return {
-                items: updatedItems,
-                totalAmount: updatedTotalAmount,
-                totalItems: updatedTotalItems,
-            };
             break;
+
         case "REMOVE":
-            const existingItemIndex = state.items.findIndex(
+            existItemIndex = state.items.findIndex(
                 (item) => item.id === action.id
             );
-            const existingItem = state.items[existingItemIndex];
+            existItem = state.items[existItemIndex];
 
-            let updatingItems;
+            if (!existItem) return;
 
-            if (!existingItem) return;
+            updateTotalAmount = +(state.totalAmount - existItem.price).toFixed(
+                2
+            );
+            updateTotalItems = state.totalItems - 1;
 
-            const updatingTotalAmount = +(
-                state.totalAmount - existingItem.price
-            ).toFixed(2);
-            const updatingTotalItems = state.totalItems - 1;
-
-            if (existingItem.amount < 2) {
-                updatingItems = state.items.filter(
-                    (item) => item.id != existingItem.id
+            if (existItem.amount < 2) {
+                updateItems = state.items.filter(
+                    (item) => item.id != existItem.id
                 );
             } else {
-                const updateItem = {
-                    ...existingItem,
-                    amount: existingItem.amount - 1,
+                let updateItem = {
+                    ...existItem,
+                    amount: existItem.amount - 1,
                 };
-                updatingItems = [...state.items];
-                updatingItems[existingItemIndex] = updateItem;
+                updateItems = [...state.items];
+                updateItems[existItemIndex] = updateItem;
             }
-
-            localStorage.setItem(
-                "cart",
-                JSON.stringify({
-                    items: updatingItems,
-                    totalAmount: updatingTotalAmount,
-                    totalItems: updatingTotalItems,
-                })
-            );
-            return {
-                items: updatingItems,
-                totalAmount: updatingTotalAmount,
-                totalItems: updatingTotalItems,
-            };
             break;
     }
+
+    if (updateItems && updateTotalAmount && updateTotalItems) {
+        localStorage.setItem(
+            "cart",
+            JSON.stringify({
+                items: updateItems,
+                totalAmount: updateTotalAmount,
+                totalItems: updateTotalItems,
+            })
+        );
+        return {
+            items: updateItems,
+            totalAmount: updateTotalAmount,
+            totalItems: updateTotalItems,
+        };
+    }
+
     const localCart = JSON.parse(localStorage.getItem("cart"));
     return localCart ?? defaultCartState;
 };
