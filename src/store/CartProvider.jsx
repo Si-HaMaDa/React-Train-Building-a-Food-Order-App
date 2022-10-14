@@ -7,7 +7,7 @@ const defaultCartState = {
     totalItems: 0,
 };
 
-const cartReducer = (state, action) => {
+const cartReducer = (state, action = { type: null }) => {
     switch (action.type) {
         case "ADD":
             const updatedTotalAmount = +(
@@ -34,6 +34,14 @@ const cartReducer = (state, action) => {
                 updatedItems = state.items.concat(action.item);
             }
 
+            localStorage.setItem(
+                "cart",
+                JSON.stringify({
+                    items: updatedItems,
+                    totalAmount: updatedTotalAmount,
+                    totalItems: updatedTotalItems,
+                })
+            );
             return {
                 items: updatedItems,
                 totalAmount: updatedTotalAmount,
@@ -68,6 +76,14 @@ const cartReducer = (state, action) => {
                 updatingItems[existingItemIndex] = updateItem;
             }
 
+            localStorage.setItem(
+                "cart",
+                JSON.stringify({
+                    items: updatingItems,
+                    totalAmount: updatingTotalAmount,
+                    totalItems: updatingTotalItems,
+                })
+            );
             return {
                 items: updatingItems,
                 totalAmount: updatingTotalAmount,
@@ -75,13 +91,16 @@ const cartReducer = (state, action) => {
             };
             break;
     }
-    return defaultCartState;
+    const localCart = JSON.parse(localStorage.getItem("cart"));
+    return localCart ?? defaultCartState;
 };
+
+const initCartState = cartReducer();
 
 function CartProvider(props) {
     const [cartState, dispatchCartAction] = useReducer(
         cartReducer,
-        defaultCartState
+        initCartState
     );
 
     const addToCartHandler = (item) => {
