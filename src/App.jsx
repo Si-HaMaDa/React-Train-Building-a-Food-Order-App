@@ -8,7 +8,7 @@ function App() {
     const [cartIsShown, setCartIsShown] = useState(false);
 
     const toggleCartHandler = () => {
-        setCartIsShown(!cartIsShown);
+        setCartIsShown((old) => !old);
     };
 
     return (
