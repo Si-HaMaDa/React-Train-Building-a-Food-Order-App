@@ -41,6 +41,7 @@ function Checkout(props) {
 
         let newFormState = { ...formInputsState };
         let formIsValid = true;
+        let userData = {};
 
         for (let inputName in formInputsState) {
             newFormState[inputName].value =
@@ -55,6 +56,8 @@ function Checkout(props) {
                 valueIsValid ? "" : classes.invalid
             }`;
 
+            userData[inputName] = newFormState[inputName].value;
+
             if (!valueIsValid) formIsValid = false;
         }
 
@@ -62,7 +65,7 @@ function Checkout(props) {
 
         if (!formIsValid) return;
 
-        console.log("Submit the data!");
+        props.onOrderConfirm(userData);
     };
 
     return (
