@@ -67,7 +67,11 @@ const cartReducer = (state, action = { type: null }) => {
             break;
     }
 
-    if (updateItems && updateTotalAmount && updateTotalItems) {
+    if (
+        updateItems != undefined &&
+        updateTotalAmount != undefined &&
+        updateTotalItems != undefined
+    ) {
         localStorage.setItem(
             "cart",
             JSON.stringify({
