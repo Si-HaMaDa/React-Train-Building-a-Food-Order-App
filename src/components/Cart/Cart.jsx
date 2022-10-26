@@ -1,24 +1,26 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import Modal from "../UI/Modal";
 import CartItem from "./CartItem";
+import Checkout from "./Checkout";
 
 import classes from "./Cart.module.css";
 
 import CartContext from "../../store/cart-context";
 
 function Cart(props) {
+    const [isCheckout, setIsCheckout] = useState(false);
     const cartCtx = useContext(CartContext);
 
     const cartTotals = cartCtx.totalAmount;
 
-    const cartAddHandler = (item) => {
-        cartCtx.addItem({ ...item, amount: 1 });
-    };
+    const cartAddHandler = (item) => cartCtx.addItem({ ...item, amount: 1 });
 
-    const cartRemoveHandler = (id) => {
-        cartCtx.removeItem(id);
-    };
+    const cartRemoveHandler = (id) => cartCtx.removeItem(id);
+
+    const cancelHandler = () => setIsCheckout(false);
+
+    const orderHandler = () => setIsCheckout(true);
 
     const cartItems = (
         <ul className={classes["cart-items"]}>
@@ -36,6 +38,19 @@ function Cart(props) {
         </ul>
     );
 
+    const modalActions = (
+        <div className={classes.actions}>
+            <button className={classes["button--alt"]} onClick={props.onClose}>
+                Close
+            </button>
+            {cartCtx.items.length > 0 && (
+                <button className={classes.button} onClick={orderHandler}>
+                    Order
+                </button>
+            )}
+        </div>
+    );
+
     return (
         <Modal onClose={props.onClose}>
             {cartItems}
@@ -43,15 +58,8 @@ function Cart(props) {
                 <span>Total Amount</span>
                 <span>${cartTotals}</span>
             </div>
-            <div className={classes.actions}>
-                <button
-                    className={classes["button--alt"]}
-                    onClick={props.onClose}
-                >
-                    Close
-                </button>
-                <button className={classes.button}>Order</button>
-            </div>
+            {isCheckout && <Checkout onCancel={cancelHandler} />}
+            {!isCheckout && modalActions}
         </Modal>
     );
 }
